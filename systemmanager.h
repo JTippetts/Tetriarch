@@ -29,6 +29,8 @@ log information about their operation.
 #define SYSTEMMANAGER_H
 #include <memory>
 #include <vector>
+#include <map>
+#include "objectbase.h"
 
 // Forward declaration of SystemManager, so that the system can store a pointer to it.
 class SystemManager;
@@ -46,6 +48,27 @@ protected:
     SystemBase(SystemManager *sm) : systemmgr_(sm){}
     SystemManager *systemmgr_;
 };
+
+class EventGroup
+{
+public:
+    EventGroup();
+    ~EventGroup();
+
+    void Add(ObjectBase *o);
+    void Remove(ObjectBase *o);
+
+    void SendEvent(ObjectBase *sender, StringHash msg, AnyMap &args);
+private:
+    std::vector<ObjectBase *> receivers_;
+    std::size_t sending_;
+    bool dirty_;
+
+    std::vector<ObjectBase *>::iterator FindObject(ObjectBase *p);
+};
+
+typedef std::map<StringHash, EventGroup> EventGroupMap;
+typedef std::map<ObjectBase *, EventGroupMap> SpecificEventGroupMaps;
 
 // Implement SystemManager
 class SystemManager
@@ -93,9 +116,23 @@ public:
         }
     }
 
+    void SubscribeEvent(ObjectBase *obj, StringHash event);
+    void SubscribeEvent(ObjectBase *origin, ObjectBase *obj, StringHash event);
+    void UnsubscribeEvent(ObjectBase *obj, StringHash event);
+    void UnsubscribeEvent(ObjectBase *origin, ObjectBase *obj, StringHash event);
+    void UnsubscribeAllEvents(ObjectBase *obj);
+    void RemoveSubscriptions(ObjectBase *obj); // Remove all subscription lists for object
+
+    void SendEvent(StringHash event, AnyMap& args);
+    void SendEvent(ObjectBase *sender, StringHash event, AnyMap &args);
+    void SendEvent(std::string event, AnyMap& args){SendEvent(StringHasher{}(event), args);}
+    void SendEvent(ObjectBase *sender, std::string event, AnyMap &args){SendEvent(sender, StringHasher{}(event), args);}
+
 
 private:
     std::vector<std::shared_ptr<SystemBase> > systems_;
+    EventGroupMap eventgroups_;
+    SpecificEventGroupMaps specificeventgroups_;
 };
 
 #endif

@@ -2,6 +2,9 @@
 #include "logging.h"
 #include "renderer.h"
 
+#include <SDL.h>
+
+
 
 WindowingSystem::WindowingSystem(SystemManager *mgr) : SystemBase(mgr), window_(0)
 {
@@ -31,7 +34,7 @@ bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
     unsigned int flags=SDL_WINDOW_OPENGL;
     if(fullscreen) flags|=SDL_WINDOW_FULLSCREEN;
 
-    window_= SDL_CreateWindow("Game Window",
+    window_= SDL_CreateWindow("Tetriarch",
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,
                           width, height,
