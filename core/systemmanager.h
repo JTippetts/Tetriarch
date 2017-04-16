@@ -30,7 +30,7 @@ log information about their operation.
 #include <memory>
 #include <vector>
 #include <map>
-#include "objectbase.h"
+#include "core/objectbase.h"
 
 // Forward declaration of SystemManager, so that the system can store a pointer to it.
 class SystemManager;

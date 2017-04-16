@@ -2,7 +2,7 @@
 #include <GL/GL.h>
 #include "windowingsystem.h"
 
-#include "logging.h"
+#include "core/logging.h"
 
 void Renderer::Render(float percent)
 {

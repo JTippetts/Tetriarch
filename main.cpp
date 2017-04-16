@@ -7,14 +7,16 @@
 
 #include <windows.h>
 
-#include "systemmanager.h"
+#include "core/systemmanager.h"
 #include "resourcecache.h"
 
 #include "windowingsystem.h"
-#include "logging.h"
+#include "core/logging.h"
 #include "renderer.h"
 
-#include "messaging.h"
+#include "core/messaging.h"
+
+using linb::any_cast;
 
 class TestResource1 : public ResourceBase
 {
@@ -47,6 +49,7 @@ public:
     virtual void HandleEvent(StringHash msg, AnyMap &args)
     {
         static StringHash TEST=StringHasher{}("TEST");
+        static StringHash Test=StringHasher{}("Test");
         static StringHash UPDATE=StringHasher{}("UPDATE");
         static StringHash GROUPUPDATE=StringHasher{}("GROUPUPDATE");
 
@@ -54,6 +57,8 @@ public:
         if (msg==TEST) log->Log(LOG_INFO, "Received a TEST message in TestObject.");
         else if(msg==UPDATE) log->Log(LOG_INFO, "Received an UPDATE message in TestObject.");
         else if(msg==GROUPUPDATE) log->Log(LOG_INFO, "Received a GROUPUPDATE message in TestObject.");
+
+        log->Log(LOG_INFO, "Parameter Test: %f", any_cast<double>(args[Test]));
     }
 
     virtual void HandleEvent(ObjectBase *sender, StringHash msg, AnyMap &args)
@@ -112,6 +117,8 @@ int main(int argc, char **argv)
 
 
     AnyMap am;
+
+    am[StringHasher{}("Test")]=42.0;
     mom.SendEvent(StringHasher{}("UPDATE"), am);
 
     to->UnsubscribeEvent("UPDATE");
@@ -124,6 +131,19 @@ int main(int argc, char **argv)
     to->SubscribeEvent(to1.get(), "TEST");
 
     mom.SendEvent(to1.get(), StringHasher{}("TEST"), am);
+    mom.SendEvent("TEST", am);
+
+    to->UnsubscribeEvent(to1.get(), "TEST");
+    mom.SendEvent(to1.get(), "TEST", am);
+
+    to->SubscribeEvent(to1.get(), "TEST");
+    mom.SendEvent(to1.get(), "TEST", am);
+    to1->SendEvent("TEST", am);
+
+    mom.RemoveSubscriptions(to1.get());
+    mom.SendEvent(to1.get(), "TEST", am);
+
+    to1->SendEvent("TEST", am);
 
     return 0;
 }

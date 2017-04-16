@@ -1,6 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-#include "systemmanager.h"
+#include "core/systemmanager.h"
 
 class Renderer : public SystemBase
 {

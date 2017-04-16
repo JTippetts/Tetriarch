@@ -1,5 +1,5 @@
 #include "windowingsystem.h"
-#include "logging.h"
+#include "core/logging.h"
 #include "renderer.h"
 
 #include <SDL.h>

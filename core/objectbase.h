@@ -1,7 +1,7 @@
 #ifndef OBJECTBASE_H
 #define OBJECTBASE_H
 
-#include "messaging.h"
+#include "core/messaging.h"
 
 class SystemManager;
 

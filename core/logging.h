@@ -1,7 +1,7 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "systemmanager.h"
+#include "core/systemmanager.h"
 #include <string>
 #include <fstream>
 

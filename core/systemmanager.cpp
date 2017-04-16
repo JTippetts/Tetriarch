@@ -1,4 +1,4 @@
-#include "systemmanager.h"
+#include "core/systemmanager.h"
 
 EventGroup::EventGroup() : sending_(0), dirty_(false){}
 EventGroup::~EventGroup(){}

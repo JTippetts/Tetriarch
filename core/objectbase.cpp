@@ -1,5 +1,5 @@
-#include "objectbase.h"
-#include "systemmanager.h"
+#include "core/objectbase.h"
+#include "core/systemmanager.h"
 
 ObjectBase::~ObjectBase()
 {

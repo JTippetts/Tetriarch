@@ -10,7 +10,7 @@ Notice that WindowingSystem derives from SystemBase, so that it can be managed b
 #ifndef WINDOWINGSYSTEM_H
 #define WINDOWINGSYSTEM_H
 
-#include "systemmanager.h"
+#include "core/systemmanager.h"
 #include <SDL.h>
 
 class WindowingSystem : public SystemBase

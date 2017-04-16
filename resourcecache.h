@@ -22,8 +22,8 @@ can be loaded again by subsequent calls to GetResource.
 #include <string>
 #include <map>
 
-#include "systemmanager.h"
-#include "logging.h"
+#include "core/systemmanager.h"
+#include "core/logging.h"
 
 // The base class for Resources. All Resources must inherit from ResourceBase in order to be managed by the cache.
 class ResourceBase
