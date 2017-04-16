@@ -15,6 +15,11 @@
 #include "renderer.h"
 
 #include "core/messaging.h"
+#include "scene/node.h"
+#include "scene/componentbase.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 using linb::any_cast;
 
@@ -144,6 +149,21 @@ int main(int argc, char **argv)
     mom.SendEvent(to1.get(), "TEST", am);
 
     to1->SendEvent("TEST", am);
+
+    std::shared_ptr<Node> n1=std::make_shared<Node>(&mom);
+    std::shared_ptr<Node> n2=n1->CreateChild();
+    //n1->SetOrientation(0);
+
+    n1->SetPosition(glm::vec2(10,12));
+    n1->SetScale(glm::vec2(2,2));
+    n2->SetPosition(glm::vec2(13,5));
+    //n1->SetOrientation(-1.5708);
+
+    mom.SendEvent("PreUpdate", am);
+
+    glm::mat4 m=n2->GetMatrix(0);
+
+    //log->Log(LOG_INFO, std::string("Matrix to string: ")+glm::to_string(m));
 
     return 0;
 }
