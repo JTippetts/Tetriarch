@@ -1,6 +1,7 @@
 #include "windowingsystem.h"
 #include "core/logging.h"
 #include "renderer.h"
+#include "core/messaging.h"
 
 #include <SDL.h>
 
@@ -52,6 +53,16 @@ bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
 
 void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
 {
+    static StringHash PreUpdate=StringHasher{}("PreUpdate");
+    static StringHash Update=StringHasher{}("Update");
+    static StringHash PostUpdate=StringHasher{}("PostUpdate");
+    static StringHash RenderPreUpdate=StringHasher{}("RenderPreUpdate");
+    static StringHash RenderUpdate=StringHasher{}("RenderUpdate");
+    static StringHash RenderPostUpdate=StringHasher{}("RenderPostUpdate");
+
+    static StringHash DeltaTime=StringHasher{}("DeltaTime");
+    static StringHash FrameTime=StringHasher{}("FrameTime");
+    AnyMap am;
     loopexecuting_=true;
     resetloop_=false;
     bool purgeEvents=false;
@@ -64,6 +75,8 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
     unsigned int curFrame=0;
     unsigned int logicStep=1000/updatesPerSecond;
     float dt=1.0/(float)updatesPerSecond;
+
+    am[FrameTime]=dt;
 
     while(loopexecuting_)
     {
@@ -89,13 +102,21 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
         logicCounter=logicCounter + frameDelta;
         while(logicCounter>=logicStep)
         {
-            systemmgr_->Update(dt);
+            systemmgr_->SendEvent(PreUpdate, am);
+            systemmgr_->SendEvent(Update, am);
+            systemmgr_->SendEvent(PostUpdate, am);
+            //systemmgr_->Update(dt);
             logicCounter-=logicStep;
             if(resetloop_) logicCounter=0;
             curFrame++;
         }
 
         float percentWithinTick=(float)logicCounter / (float)logicStep;
+        am[DeltaTime]=percentWithinTick;
+        systemmgr_->SendEvent(RenderPreUpdate, am);
+        systemmgr_->SendEvent(RenderUpdate, am);
+        systemmgr_->SendEvent(RenderPostUpdate, am);
+
         Renderer *renderer=systemmgr_->GetSystem<Renderer>();
         if(renderer) renderer->Render(percentWithinTick);
 

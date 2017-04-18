@@ -41,7 +41,14 @@ public:
     std::shared_ptr<Node> CreateChild(std::string name);
     void RemoveChild(std::shared_ptr<Node> p);
     void RemoveChild(Node *p);
-    void SetParent(Node *p){parent_=p;}
+    void SetParent(Node *p)
+    {
+        if(parent_)
+        {
+            parent_->RemoveChild(this);
+        }
+        parent_=p;
+    }
 
     void SetName(std::string name){name_=name;}
 
