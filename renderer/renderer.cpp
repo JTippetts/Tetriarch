@@ -1,6 +1,6 @@
 #include "renderer.h"
 #include <GL/GL.h>
-#include "windowingsystem.h"
+#include "core/windowingsystem.h"
 
 #include "core/logging.h"
 

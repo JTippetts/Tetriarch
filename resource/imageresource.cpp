@@ -1,2 +1,2 @@
-#include "imageresource.h"
+#include "resource/imageresource.h"
 

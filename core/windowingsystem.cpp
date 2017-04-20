@@ -1,6 +1,6 @@
-#include "windowingsystem.h"
+#include "core/windowingsystem.h"
 #include "core/logging.h"
-#include "renderer.h"
+#include "renderer/renderer.h"
 #include "core/messaging.h"
 
 #include <SDL.h>

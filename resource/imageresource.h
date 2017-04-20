@@ -1,9 +1,9 @@
 #ifndef IMAGERESOURCE_H
 #define IMAGERESOURCE_H
 
-#include "resourcecache.h"
+#include "resource/resourcecache.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "stb/stb_image.h"
 
 class ImageResource : public ResourceBase
 {
