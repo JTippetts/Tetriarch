@@ -27,8 +27,8 @@ void Node::HandleEvent(ObjectBase *sender, StringHash msg, AnyMap &args){}
 std::shared_ptr<Node> Node::CreateChild()
 {
     auto p=std::make_shared<Node>(sm_);
-    p->SetParent(this);
-    children_.push_back(p);
+    //p->SetParent(this);
+    AddChild(p);
     return p;
 }
 
@@ -36,8 +36,8 @@ std::shared_ptr<Node> Node::CreateChild(std::string name)
 {
     auto p=std::make_shared<Node>(sm_);
     p->SetName(name);
-    p->SetParent(this);
-    children_.push_back(p);
+    //p->SetParent(this);
+    AddChild(p);
     return p;
 }
 
@@ -52,7 +52,7 @@ void Node::RemoveChild(std::shared_ptr<Node> p)
         }
     }
 
-    p->SetParent(nullptr);
+    p->parent_=nullptr;
 }
 
 void Node::RemoveChild(Node *p)
@@ -65,6 +65,6 @@ void Node::RemoveChild(Node *p)
             return;
         }
     }
-    p->SetParent(nullptr);
+    p->parent_=nullptr;
 }
 

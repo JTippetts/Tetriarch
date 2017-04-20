@@ -41,13 +41,12 @@ public:
     std::shared_ptr<Node> CreateChild(std::string name);
     void RemoveChild(std::shared_ptr<Node> p);
     void RemoveChild(Node *p);
-    void SetParent(Node *p)
+
+    void AddChild(std::shared_ptr<Node> c)
     {
-        if(parent_)
-        {
-            parent_->RemoveChild(this);
-        }
-        parent_=p;
+        if(c->parent_) c->parent_->RemoveChild(c);
+        c->parent_=this;
+        children_.push_back(c);
     }
 
     void SetName(std::string name){name_=name;}
@@ -83,8 +82,6 @@ public:
 
     glm::mat4 GetMatrix(float t)
     {
-        Logging *log=sm_->GetSystem<Logging>();
-
         glm::quat q=InterpOrientation(t);
         glm::mat4 mat=glm::mat4_cast(q);
         glm::vec2 p=InterpPosition(t);
@@ -92,21 +89,13 @@ public:
 
         glm::mat4 trans=glm::translate(glm::mat4(), glm::vec3(p.x, p.y, 0));
         glm::mat4 scale=glm::scale(glm::mat4(), glm::vec3(s.x, s.y, 1));
-
-        log->Log(LOG_INFO, "Translation: "+glm::to_string(trans));
-        log->Log(LOG_INFO, "Rotation: "+glm::to_string(mat));
-        log->Log(LOG_INFO, "Scale: "+glm::to_string(scale));
-
         mat=trans*mat*scale;
 
         if(parent_)
         {
             glm::mat4 par=parent_->GetMatrix(t);
             mat=par*mat;
-            log->Log(LOG_INFO, "Parent: "+glm::to_string(par));
         }
-
-        log->Log(LOG_INFO, "Final: "+glm::to_string(mat));
 
         return mat;
     }
