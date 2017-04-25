@@ -18,8 +18,21 @@
 #include "scene/node.h"
 #include "scene/componentbase.h"
 
+#include "resource/yamlfile.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
+
+#define TEST_IMPL
+#include "test.h"
+
+//#define ANL_IMPLEMENTATION
+#include <anl.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "Imaging/stb_image.h"
+#include "Imaging/stb_image_write.h"
 
 using linb::any_cast;
 
@@ -97,7 +110,7 @@ int main(int argc, char **argv)
     // Create the ResourceCache system
     // See resourcecache.h
 
-    mom.GetSystem<ResourceCache>();
+    ResourceCache *cache=mom.GetSystem<ResourceCache>();
 
     // Create the Windowing system. Windowing manages the application window, the main loop and the
     // event handling portion.
@@ -105,6 +118,11 @@ int main(int argc, char **argv)
 
     // Create the Renderer. The Renderer handles drawing everything.
     mom.GetSystem<Renderer>();
+
+    auto yf=cache->GetResource<YAMLFile>("test.yml");
+
+    double f=table[3];
+    foo();
 
 
 
@@ -162,6 +180,20 @@ int main(int argc, char **argv)
     mom.SendEvent("PreUpdate", am);
 
     glm::mat4 m=n2->GetMatrix(0);
+
+    anl::CKernel k;
+    anl::CNoiseExecutor vm(k);
+    anl::CExpressionBuilder eb(k);
+
+    auto idx=eb.eval("3.0+4.0");
+
+    //auto idx=k.constant(1);
+
+    log->Log(LOG_INFO, "ANL Test: %f", vm.evaluateScalar(0,0, idx));
+
+
+
+    if(gs && gs->SetVideoMode(800,600,false)) gs->ExecuteMainLoop(24);
 
     //log->Log(LOG_INFO, std::string("Matrix to string: ")+glm::to_string(m));
 

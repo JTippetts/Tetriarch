@@ -11,7 +11,7 @@ Notice that WindowingSystem derives from SystemBase, so that it can be managed b
 #define WINDOWINGSYSTEM_H
 
 #include "core/systemmanager.h"
-#include <SDL.h>
+#include <GLFW/glfw3.h>
 
 class WindowingSystem : public SystemBase
 {
@@ -28,12 +28,9 @@ public:
 
     void Flip();
 private:
-    SDL_Window *window_;
-    SDL_GLContext context_;
+    GLFWwindow *window_;
     bool loopexecuting_=false;
     bool resetloop_=false;
-
-    void HandleEvent(SDL_Event *event);
 };
 
 #endif

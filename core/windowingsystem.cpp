@@ -3,27 +3,30 @@
 #include "renderer/renderer.h"
 #include "core/messaging.h"
 
-#include <SDL.h>
+#include "core/glfwwrapper.h"
 
 
 
-WindowingSystem::WindowingSystem(SystemManager *mgr) : SystemBase(mgr), window_(0)
+WindowingSystem::WindowingSystem(SystemManager *mgr) : SystemBase(mgr), window_(nullptr)
 {
     Logging *log=systemmgr_->GetSystem<Logging>();
     if(log) log->Log(LOG_INFO, "Starting WindowingSystem.");
 }
 WindowingSystem::~WindowingSystem()
 {
-    SDL_GL_DeleteContext(context_);
-    SDL_Quit();
+    //SDL_GL_DeleteContext(context_);
+    //SDL_Quit();
+    glfwTerminate();
 }
 
 bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
 {
     Logging *log=systemmgr_->GetSystem<Logging>();
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)<0)
+    InitializeGLFWWrapping(log);
+
+    if(!glfwInit())
     {
-        log->Log(LOG_ERROR, "Unable to initialize SDL: %s", SDL_GetError());
+        log->Log(LOG_ERROR, "Unable to initialize GLFW.");
         return false;
     }
 
@@ -32,21 +35,25 @@ bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
     {
     }
 
-    unsigned int flags=SDL_WINDOW_OPENGL;
-    if(fullscreen) flags|=SDL_WINDOW_FULLSCREEN;
+    //unsigned int flags=SDL_WINDOW_OPENGL;
+    //if(fullscreen) flags|=SDL_WINDOW_FULLSCREEN;
 
-    window_= SDL_CreateWindow("Tetriarch",
-                          SDL_WINDOWPOS_UNDEFINED,
-                          SDL_WINDOWPOS_UNDEFINED,
-                          width, height,
-                          flags );
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+
+    if(fullscreen) window_=glfwCreateWindow(width, height, "Tetriarch", glfwGetPrimaryMonitor(), 0);
+    else window_=glfwCreateWindow(width, height, "Tetriarch", 0, 0);
+
     if(!window_)
     {
-        log->Log(LOG_ERROR, "Could not set requested video mode: %s", SDL_GetError());
+        log->Log(LOG_ERROR, "Could not set requested video mode.");
         return false;
     }
+    glfwGetFramebufferSize(window_, &width, &height);
+    glViewport(0, 0, width, height);
 
-    context_ = SDL_GL_CreateContext(window_);
+    //context_ = SDL_GL_CreateContext(window_);
+    glfwMakeContextCurrent(window_);
 
     return true;
 }
@@ -67,51 +74,52 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
     resetloop_=false;
     bool purgeEvents=false;
 
-    unsigned int oldTime=SDL_GetTicks();
-    unsigned int curTime=0;
-    unsigned int logicCounter=0;
-    SDL_Event event;
-    unsigned int frameDelta;
+    double oldTime=glfwGetTime();//SDL_GetTicks();
+    double curTime=0;
+    double logicCounter=0;
+
+    double frameDelta;
     unsigned int curFrame=0;
-    unsigned int logicStep=1000/updatesPerSecond;
-    float dt=1.0/(float)updatesPerSecond;
+    //double logicStep=1000.0/updatesPerSecond;
+    double dt=1.0/(double)updatesPerSecond;
 
     am[FrameTime]=dt;
 
-    while(loopexecuting_)
+    while(loopexecuting_ && !glfwWindowShouldClose(window_))
     {
         if(resetloop_)
         {
-            oldTime=SDL_GetTicks();
+            oldTime=glfwGetTime();//SDL_GetTicks();
             logicCounter=0;
             resetloop_=false;
             purgeEvents=true;
         }
 
-        while(SDL_PollEvent(&event))
+        /*while(SDL_PollEvent(&event))
         {
             if(!purgeEvents)
             {
                 HandleEvent(&event);
             }
             if(!loopexecuting_) return;
-        }
+        }*/
+        glfwPollEvents();
 
-        curTime=SDL_GetTicks();
+        curTime=glfwGetTime();//SDL_GetTicks();
         frameDelta=curTime-oldTime;
         logicCounter=logicCounter + frameDelta;
-        while(logicCounter>=logicStep)
+        while(logicCounter>=dt)
         {
             systemmgr_->SendEvent(PreUpdate, am);
             systemmgr_->SendEvent(Update, am);
             systemmgr_->SendEvent(PostUpdate, am);
             //systemmgr_->Update(dt);
-            logicCounter-=logicStep;
+            logicCounter-=dt;
             if(resetloop_) logicCounter=0;
             curFrame++;
         }
 
-        float percentWithinTick=(float)logicCounter / (float)logicStep;
+        float percentWithinTick=(float)logicCounter / (float)dt;
         am[DeltaTime]=percentWithinTick;
         systemmgr_->SendEvent(RenderPreUpdate, am);
         systemmgr_->SendEvent(RenderUpdate, am);
@@ -123,16 +131,8 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
     }
 }
 
-void WindowingSystem::HandleEvent(SDL_Event *event)
-{
-    switch(event->type)
-    {
-        case SDL_KEYDOWN: EndLoop(); break;
-        default: break;
-    }
-}
-
 void WindowingSystem::Flip()
 {
-    SDL_GL_SwapWindow(window_);
+    //SDL_GL_SwapWindow(window_);
+    glfwSwapBuffers(window_);
 }
