@@ -8,60 +8,6 @@
 
 #include <map>
 
-class VertexShader : public ResourceBase
-{
-	protected:
-		GLuint id_;         // The unique ID / handle for the shader
-		std::string source_;     // The shader source code (i.e. the GLSL code itself)
-		SystemManager *systemmanager_;
-
-	public:
-		// Constructor
-		VertexShader();
-		~VertexShader();
-
-		GLuint getId()
-		{
-			return id_;
-		}
-
-		std::string getSource()
-		{
-			return source_;
-		}
-
-		virtual void Load(SystemManager *mom, std::string filename);
-private:
-		void compile();
-};
-
-class FragmentShader : public ResourceBase
-{
-	protected:
-		GLuint id_;         // The unique ID / handle for the shader
-		std::string source_;     // The shader source code (i.e. the GLSL code itself)
-		SystemManager *systemmanager_;
-
-	public:
-		// Constructor
-		FragmentShader();
-		~FragmentShader();
-
-		GLuint getId()
-		{
-			return id_;
-		}
-
-		std::string getSource()
-		{
-			return source_;
-		}
-
-		virtual void Load(SystemManager *mom, std::string filename);
-    private:
-		void compile();
-};
-
 class ShaderProgram : public ResourceBase
 {
 public:
@@ -78,14 +24,16 @@ public:
     GLint uniform(std::string uni);
 protected:
     SystemManager *systemmanager_;
-    std::shared_ptr<VertexShader> vertexshader_;
-    std::shared_ptr<FragmentShader> fragmentshader_;
-    std::shared_ptr<YAMLFile> definition_;
-
     GLuint id_;
 
     std::map<std::string, GLint> attributes_;
     std::map<std::string, GLint> uniforms_;
+
+    GLuint compileShader(std::string shaderSource, GLenum shaderType);
+    std::string loadShaderFromFile(const std::string filename);
+
+    std::string getShaderInfoLog(int id);
+    std::string getProgramInfoLog(int id);
 };
 
 #endif
