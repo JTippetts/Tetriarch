@@ -29,10 +29,6 @@
 //#define ANL_IMPLEMENTATION
 #include <anl.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "Imaging/stb_image.h"
-#include "Imaging/stb_image_write.h"
 
 using linb::any_cast;
 
