@@ -1,10 +1,13 @@
+extern "C"{
+#include <GL/glew.h>
+}
 #include "core/windowingsystem.h"
 #include "core/logging.h"
 #include "renderer/renderer.h"
 #include "core/messaging.h"
 
-#include "core/glfwwrapper.h"
-
+#define GLEQ_IMPLEMENTATION
+#include "gleq.h"
 
 
 WindowingSystem::WindowingSystem(SystemManager *mgr) : SystemBase(mgr), window_(nullptr)
@@ -14,15 +17,12 @@ WindowingSystem::WindowingSystem(SystemManager *mgr) : SystemBase(mgr), window_(
 }
 WindowingSystem::~WindowingSystem()
 {
-    //SDL_GL_DeleteContext(context_);
-    //SDL_Quit();
     glfwTerminate();
 }
 
 bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
 {
     Logging *log=systemmgr_->GetSystem<Logging>();
-    InitializeGLFWWrapping(log);
 
     if(!glfwInit())
     {
@@ -49,8 +49,19 @@ bool WindowingSystem::SetVideoMode(int width, int height, bool fullscreen)
         log->Log(LOG_ERROR, "Could not set requested video mode.");
         return false;
     }
+
+    glfwMakeContextCurrent(window_);
+    GLenum err = glewInit();
+    if(err != GLEW_OK)
+    {
+        log->Log(LOG_ERROR, "Could not initialize GLEW.");
+    }
+    else log->Log(LOG_INFO, "Initialized GLEW.");
+
     glfwGetFramebufferSize(window_, &width, &height);
     glViewport(0, 0, width, height);
+
+    gleqTrackWindow(window_);
 
     //context_ = SDL_GL_CreateContext(window_);
     glfwMakeContextCurrent(window_);
@@ -95,6 +106,8 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
             purgeEvents=true;
         }
 
+
+
         /*while(SDL_PollEvent(&event))
         {
             if(!purgeEvents)
@@ -104,6 +117,18 @@ void WindowingSystem::ExecuteMainLoop(unsigned int updatesPerSecond)
             if(!loopexecuting_) return;
         }*/
         glfwPollEvents();
+
+        GLEQevent event;
+        while(gleqNextEvent(&event))
+        {
+            if(!purgeEvents)
+            {
+                // Handle event
+            }
+            if(!loopexecuting_) return;
+        }
+
+        gleqFreeEvent(&event);
 
         curTime=glfwGetTime();//SDL_GetTicks();
         frameDelta=curTime-oldTime;

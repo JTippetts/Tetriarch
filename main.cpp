@@ -23,10 +23,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-#define TEST_IMPL
-#include "test.h"
 
-//#define ANL_IMPLEMENTATION
+#define ANL_IMPLEMENTATION
+#define IMPLEMENT_STB
 #include <anl.h>
 
 
@@ -116,9 +115,6 @@ int main(int argc, char **argv)
     mom.GetSystem<Renderer>();
 
     auto yf=cache->GetResource<YAMLFile>("test.yml");
-
-    double f=table[3];
-    foo();
 
 
 
