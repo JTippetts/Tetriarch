@@ -2,8 +2,11 @@
 #define SHADER_H
 
 #include "../resource/resourcecache.h"
+#include "../resource/yamlfile.h"
 #include <GL/glew.h>
 #include <GL/GL.h>
+
+#include <map>
 
 class VertexShader : public ResourceBase
 {
@@ -59,6 +62,30 @@ class FragmentShader : public ResourceBase
 		void compile();
 };
 
+class ShaderProgram : public ResourceBase
+{
+public:
+    ShaderProgram();
+    ~ShaderProgram();
 
+    virtual void Load(SystemManager *mom, std::string name);
+
+    GLuint getId(){return id_;}
+    void bind(){glUseProgram(id_);}
+    void disable(){glUseProgram(0);}
+
+    GLint attribute(std::string att);
+    GLint uniform(std::string uni);
+protected:
+    SystemManager *systemmanager_;
+    std::shared_ptr<VertexShader> vertexshader_;
+    std::shared_ptr<FragmentShader> fragmentshader_;
+    std::shared_ptr<YAMLFile> definition_;
+
+    GLuint id_;
+
+    std::map<std::string, GLint> attributes_;
+    std::map<std::string, GLint> uniforms_;
+};
 
 #endif
