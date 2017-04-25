@@ -3,7 +3,7 @@
 #include "core/logging.h"
 
 #define ANL_IMPLEMENTATION
-//#define IMPLEMENT_STB
+#define IMPLEMENT_STB
 #include <anl.h>
 
 Logging *glfwlogger=nullptr;
