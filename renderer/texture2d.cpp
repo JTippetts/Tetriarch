@@ -15,7 +15,12 @@ Texture2D::~Texture2D()
     glDeleteTextures(1, &id_);
 }
 
-void Texture2D::LoadFromDefinition(YAML::Node &yaml)
+void Texture2D::bind()
+{
+    glBindTexture(GL_TEXTURE_2D, id_);
+}
+
+void Texture2D::LoadFromDefinition(const YAML::Node &yaml)
 {
     Logging *log=systemmanager_->GetSystem<Logging>();
     ResourceCache *cache=systemmanager_->GetSystem<ResourceCache>();

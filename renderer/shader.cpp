@@ -52,17 +52,13 @@ std::string ShaderProgram::getProgramInfoLog(int id)
     return infoLogString;
 }
 
-void ShaderProgram::Load(std::string name)
+void ShaderProgram::LoadFromDefinition(YAML::Node &yaml)
 {
-    // Load definition from YAML File
-    ResourceCache *cache=systemmanager_->GetSystem<ResourceCache>();
     Logging *log=systemmanager_->GetSystem<Logging>();
 
-    std::shared_ptr<YAMLFile> definition=cache->GetResource<YAMLFile>(name);
-    YAML::Node &yaml=definition->GetNode();
     if (yaml.Type() != YAML::NodeType::Map)
     {
-        log->Log(LOG_ERROR, "Malformed shader definition (bad definition format): "+name);
+        log->Log(LOG_ERROR, "Malformed shader definition (bad definition format)");
         return;
     }
 
@@ -72,13 +68,13 @@ void ShaderProgram::Load(std::string name)
 
     if(vs=="")
     {
-        log->Log(LOG_ERROR, "Malformed shader definition (missing vertex shader name): "+name);
+        log->Log(LOG_ERROR, "Malformed shader definition (missing vertex shader name)");
         return;
     }
 
     if(fs=="")
     {
-        log->Log(LOG_ERROR, "Malformed shader definition (missing fragment shader name): "+name);
+        log->Log(LOG_ERROR, "Malformed shader definition (missing fragment shader name)");
         return;
     }
 
@@ -175,7 +171,16 @@ void ShaderProgram::Load(std::string name)
             }
         }
     }
+}
 
+void ShaderProgram::Load(std::string name)
+{
+    // Load definition from YAML File
+    ResourceCache *cache=systemmanager_->GetSystem<ResourceCache>();
+
+    std::shared_ptr<YAMLFile> definition=cache->GetResource<YAMLFile>(name);
+    YAML::Node &yaml=definition->GetNode();
+    LoadFromDefinition(yaml);
 }
 
 GLint ShaderProgram::attribute(std::string name)

@@ -15,6 +15,7 @@ public:
     ~ShaderProgram();
 
     virtual void Load(std::string name);
+    void LoadFromDefinition(YAML::Node &yaml);
 
     GLuint getId(){return id_;}
     void bind();

@@ -31,6 +31,7 @@
 #include "renderer/shader.h"
 #include "resource/image.h"
 #include "renderer/texture2d.h"
+#include "renderer/material.h"
 
 
 using linb::any_cast;
@@ -194,6 +195,9 @@ int main(int argc, char **argv)
         auto prog=cache->GetResource<ShaderProgram>("coreshaders/test.yml");
         auto img=cache->GetResource<Image>("coreshaders/galagasprites.png");
         auto tex=cache->GetResource<Texture2D>("coreshaders/galagasprites.yml");
+
+        auto mat=cache->GetResource<Material>("coreshaders/testmat.yml");
+        mat->enable();
         gs->ExecuteMainLoop(24);
     }
 

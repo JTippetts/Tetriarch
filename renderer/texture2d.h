@@ -12,12 +12,13 @@ public:
     Texture2D(SystemManager *mom);
     ~Texture2D();
 
-    GLuint getId(){return id_;}
+    GLuint GetId(){return id_;}
 
     void Load(std::string name);
     void Create(int w, int h, int d, unsigned char *data);
     void Create(Image *i);
-    void LoadFromDefinition(YAML::Node &yaml);
+    void LoadFromDefinition(const YAML::Node &yaml);
+    void bind();
 private:
     GLuint id_;
 };
