@@ -29,6 +29,8 @@
 #include <anl.h>
 
 #include "renderer/shader.h"
+#include "resource/image.h"
+#include "renderer/texture2d.h"
 
 
 using linb::any_cast;
@@ -36,14 +38,14 @@ using linb::any_cast;
 class TestResource1 : public ResourceBase
 {
 public:
-    TestResource1() : ResourceBase()
+    TestResource1(SystemManager *mom) : ResourceBase(mom)
     {
     }
     virtual ~TestResource1()
     {
     }
 
-    void Load(SystemManager *mom, std::string name)
+    void Load(std::string name)
     {
     }
 };
@@ -190,6 +192,8 @@ int main(int argc, char **argv)
     if(gs && gs->SetVideoMode(800,600,false))
     {
         auto prog=cache->GetResource<ShaderProgram>("coreshaders/test.yml");
+        auto img=cache->GetResource<Image>("coreshaders/galagasprites.png");
+        auto tex=cache->GetResource<Texture2D>("coreshaders/galagasprites.yml");
         gs->ExecuteMainLoop(24);
     }
 

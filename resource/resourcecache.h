@@ -29,8 +29,8 @@ can be loaded again by subsequent calls to GetResource.
 class ResourceBase
 {
 protected:
-
-    ResourceBase()
+    SystemManager *systemmanager_;
+    ResourceBase(SystemManager *mom) : systemmanager_(mom)
     {
     }
 public:
@@ -40,7 +40,7 @@ public:
     }
 
     // Resource types MUST implement Load().
-    virtual void Load(SystemManager *mom, std::string name)=0;
+    virtual void Load(std::string name)=0;
 };
 
 // The resource cache. Note it inherits from SystemBase, so it can be managed by the ResourceManager.
@@ -55,6 +55,23 @@ public:
     }
     ~ResourceCache()
     {
+    }
+
+    template<typename ResType> std::shared_ptr<ResType> CreateResource(std::string name)
+    {
+        Logging *log=systemmgr_->GetSystem<Logging>();
+        auto p=resources_.find(name);
+        if(p!=resources_.end() && p->second.expired()==false)
+        {
+            // Resource already exists.
+            log->Log(LOG_ERROR, "Can not create resource "+name+": Already exists.");
+            return std::shared_ptr<ResType>();
+        }
+
+        std::shared_ptr<ResType> ptr=std::make_shared<ResType>(systemmgr_);
+        auto tp=std::dynamic_pointer_cast<ResourceBase>(ptr);
+        resources_[name]=std::weak_ptr<ResourceBase>(tp);
+        return ptr;
     }
 
     // GetResource is templated by the type of resource to load. Specify the filename to load, and the specific resource type will attempt to load it.
@@ -80,8 +97,8 @@ public:
             // In this case, create (or re-create) the resource, and call Load() on it to load the resource file. Cast
             // the pointer to a ResourceBase pointer to store in the map, and return the shared pointer to the caller.
 
-            std::shared_ptr<ResType> ptr=std::make_shared<ResType>();
-            if(ptr) ptr->Load(systemmgr_,name);
+            std::shared_ptr<ResType> ptr=std::make_shared<ResType>(systemmgr_);
+            if(ptr) ptr->Load(name);
             auto tp=std::dynamic_pointer_cast<ResourceBase>(ptr);
             resources_[name]=std::weak_ptr<ResourceBase>(tp);
             return ptr;

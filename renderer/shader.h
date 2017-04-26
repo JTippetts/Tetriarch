@@ -4,17 +4,17 @@
 #include "../resource/resourcecache.h"
 #include "../resource/yamlfile.h"
 //#include <GL/glew.h>
-#include <GL/GL.h>
+#include <GL/gl.h>
 
 #include <map>
 
 class ShaderProgram : public ResourceBase
 {
 public:
-    ShaderProgram();
+    ShaderProgram(SystemManager *mom);
     ~ShaderProgram();
 
-    virtual void Load(SystemManager *mom, std::string name);
+    virtual void Load(std::string name);
 
     GLuint getId(){return id_;}
     void bind();
@@ -23,7 +23,6 @@ public:
     GLint attribute(std::string att);
     GLint uniform(std::string uni);
 protected:
-    SystemManager *systemmanager_;
     GLuint id_;
 
     std::map<std::string, GLint> attributes_;

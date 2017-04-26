@@ -1,6 +1,6 @@
 #include "resource/yamlfile.h"
 
-YAMLFile::YAMLFile() : ResourceBase(), node_()
+YAMLFile::YAMLFile(SystemManager *mom) : ResourceBase(mom), node_()
 {
 }
 
@@ -8,9 +8,9 @@ YAMLFile::~YAMLFile()
 {
 }
 
-void YAMLFile::Load(SystemManager *mom, std::string name)
+void YAMLFile::Load(std::string name)
 {
-    Logging *log=mom->GetSystem<Logging>();
+    Logging *log=systemmanager_->GetSystem<Logging>();
     log->Log(LOG_INFO, std::string("Loading YAML File ")+name);
     node_=YAML::LoadFile(name);
 

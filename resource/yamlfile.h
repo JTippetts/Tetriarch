@@ -6,10 +6,10 @@
 class YAMLFile : public ResourceBase
 {
 public:
-    YAMLFile();
+    YAMLFile(SystemManager *mom);
     ~YAMLFile();
 
-    virtual void Load(SystemManager *mom, std::string name);
+    virtual void Load(std::string name);
 
     YAML::Node &GetNode(){return node_;}
 

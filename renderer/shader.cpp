@@ -10,7 +10,7 @@
 #include <sstream>
 #include <fstream>
 
-ShaderProgram::ShaderProgram() :id_(0)
+ShaderProgram::ShaderProgram(SystemManager *mom) : ResourceBase(mom), id_(0)
 {
 }
 
@@ -52,12 +52,11 @@ std::string ShaderProgram::getProgramInfoLog(int id)
     return infoLogString;
 }
 
-void ShaderProgram::Load(SystemManager *mom, std::string name)
+void ShaderProgram::Load(std::string name)
 {
     // Load definition from YAML File
-    ResourceCache *cache=mom->GetSystem<ResourceCache>();
-    Logging *log=mom->GetSystem<Logging>();
-    systemmanager_=mom;
+    ResourceCache *cache=systemmanager_->GetSystem<ResourceCache>();
+    Logging *log=systemmanager_->GetSystem<Logging>();
 
     std::shared_ptr<YAMLFile> definition=cache->GetResource<YAMLFile>(name);
     YAML::Node &yaml=definition->GetNode();
