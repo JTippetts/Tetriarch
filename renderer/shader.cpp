@@ -1,3 +1,7 @@
+#include <GL/glew.h>
+#include <GL/GL.h>
+
+
 #include "shader.h"
 #include "../core/logging.h"
 
@@ -13,6 +17,9 @@ ShaderProgram::ShaderProgram() :id_(0)
 ShaderProgram::~ShaderProgram()
 {
 }
+
+void ShaderProgram::bind(){glUseProgram(id_);}
+void ShaderProgram::disable(){glUseProgram(0);}
 
 std::string ShaderProgram::getShaderInfoLog(int id)
 {
@@ -157,7 +164,7 @@ void ShaderProgram::Load(SystemManager *mom, std::string name)
         for(std::size_t i=0; i<uni.size(); ++i)
         {
             std::string uname=uni[i].as<std::string>();
-            GLint loc=glGetAttribLocation(id_, uname.c_str());
+            GLint loc=glGetUniformLocation(id_, uname.c_str());
             if(loc==-1)
             {
                 log->Log(LOG_ERROR, "Program does not have uniform "+uname);

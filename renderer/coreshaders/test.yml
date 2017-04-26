@@ -1,0 +1,3 @@
+vertexshader : coreshaders/test.vert
+fragmentshader : coreshaders/test.frag
+uniforms : [thing]

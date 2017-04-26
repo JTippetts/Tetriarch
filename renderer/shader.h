@@ -3,7 +3,7 @@
 
 #include "../resource/resourcecache.h"
 #include "../resource/yamlfile.h"
-#include <GL/glew.h>
+//#include <GL/glew.h>
 #include <GL/GL.h>
 
 #include <map>
@@ -17,8 +17,8 @@ public:
     virtual void Load(SystemManager *mom, std::string name);
 
     GLuint getId(){return id_;}
-    void bind(){glUseProgram(id_);}
-    void disable(){glUseProgram(0);}
+    void bind();
+    void disable();
 
     GLint attribute(std::string att);
     GLint uniform(std::string uni);

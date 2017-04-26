@@ -28,6 +28,8 @@
 #define IMPLEMENT_STB
 #include <anl.h>
 
+#include "renderer/shader.h"
+
 
 using linb::any_cast;
 
@@ -185,7 +187,11 @@ int main(int argc, char **argv)
 
 
 
-    if(gs && gs->SetVideoMode(800,600,false)) gs->ExecuteMainLoop(24);
+    if(gs && gs->SetVideoMode(800,600,false))
+    {
+        auto prog=cache->GetResource<ShaderProgram>("coreshaders/test.yml");
+        gs->ExecuteMainLoop(24);
+    }
 
     //log->Log(LOG_INFO, std::string("Matrix to string: ")+glm::to_string(m));
 
