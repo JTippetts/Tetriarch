@@ -20,9 +20,12 @@ public:
     void LoadFromDefinition(const YAML::Node &yaml);
 
     void enable();
+
+    std::shared_ptr<Texture> GetTexture(std::string bindpoint);
+    std::shared_ptr<Texture> ParseTexture(const YAML::Node &def, std::string bindpoint);
 private:
     std::shared_ptr<ShaderProgram> shader_;
-    std::map<std::string, std::shared_ptr<Texture2D>> textures_;
+    std::map<std::string, std::shared_ptr<Texture>> textures_;
     std::string name_;
 };
 

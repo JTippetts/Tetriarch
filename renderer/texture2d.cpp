@@ -5,7 +5,7 @@
 #include "core/logging.h"
 
 
-Texture2D::Texture2D(SystemManager *mom) : ResourceBase(mom), id_(0)
+Texture2D::Texture2D(SystemManager *mom) : Texture(mom), id_(0)
 {
     glGenTextures(1, &id_);
 }

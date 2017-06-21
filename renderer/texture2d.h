@@ -6,7 +6,20 @@
 #include "resource/yamlfile.h"
 #include <GL/gl.h>
 
-class Texture2D : public ResourceBase
+class Texture : public ResourceBase
+{
+public:
+    Texture(SystemManager *mom) : ResourceBase(mom){}
+    virtual ~Texture(){}
+
+    virtual void Load(std::string name)=0;
+    virtual void bind()=0;
+
+protected:
+
+};
+
+class Texture2D : public Texture
 {
 public:
     Texture2D(SystemManager *mom);

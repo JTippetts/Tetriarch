@@ -53,28 +53,67 @@ void Material::LoadFromDefinition(const YAML::Node &yaml)
             std::string bindpoint=i->first.as<std::string>();
             log->Log(LOG_INFO, "Loading texture for bind point "+bindpoint);
 
-            // Check if second is scalar, representing a string filename
-            if(i->second.Type()==YAML::NodeType::Scalar)
+            const YAML::Node &def=i->second;
+            if(def.Type()!=YAML::NodeType::Map)
             {
-                // Load texture file
-                log->Log(LOG_INFO, "Loading texture from file "+i->second.as<std::string>());
-                std::shared_ptr<Texture2D> tex=cache->GetResource<Texture2D>(i->second.as<std::string>());
-                textures_[bindpoint]=tex;
-            }
-            else if(i->second.Type()==YAML::NodeType::Map)
-            {
-                std::string texname=name_+"_"+bindpoint;
-                std::shared_ptr<Texture2D> tex=cache->CreateResource<Texture2D>(texname);
-                log->Log(LOG_INFO, "Loading texture from definition as "+texname);
-                if(tex) tex->LoadFromDefinition(i->second);
-                textures_[bindpoint]=tex;
+                log->Log(LOG_ERROR, "Bad texture definition");
             }
             else
             {
-                log->Log(LOG_ERROR, "Unrecognized material texture definition.");
+                std::shared_ptr<Texture> tex=ParseTexture(def, bindpoint);
+                if(tex)
+                {
+                    textures_[bindpoint]=tex;
+                }
+                else
+                {
+                    log->Log(LOG_ERROR, "Could not load texture.");
+                }
             }
         }
     }
+}
+
+std::shared_ptr<Texture> Material::ParseTexture(const YAML::Node &yaml, std::string bindpoint)
+{
+    Logging *log=systemmanager_->GetSystem<Logging>();
+    ResourceCache *cache=systemmanager_->GetSystem<ResourceCache>();
+
+    if(!yaml["type"] || yaml["type"].as<std::string>()=="texture2D")
+    {
+        log->Log(LOG_INFO, "Loading texture as texture2D");
+        const YAML::Node &def=yaml["texture"];
+        if(def.Type()==YAML::NodeType::Map)
+        {
+            // Load from definition
+            std::string texname=name_+"_"+bindpoint;
+            std::shared_ptr<Texture2D> tex=cache->CreateResource<Texture2D>(texname);
+            log->Log(LOG_INFO, "Loading texture from definition as "+texname);
+            if(tex) tex->LoadFromDefinition(def);
+            return std::dynamic_pointer_cast<Texture>(tex);
+        }
+        else if(def.Type()==YAML::NodeType::Scalar)
+        {
+            // Load from file
+            std::string fname=def.as<std::string>();
+            log->Log(LOG_INFO, "Loading texture from file "+fname);
+            std::shared_ptr<Texture2D> tex=cache->GetResource<Texture2D>(fname);
+            return std::dynamic_pointer_cast<Texture>(tex);
+        }
+        else
+        {
+            // BAd definition
+            log->Log(LOG_ERROR, "Bad texture definition format.");
+        }
+    }
+    else if(yaml["type"].as<std::string>()=="texture2Darray")
+    {
+        log->Log(LOG_INFO, "Loading texture as texture2Darray");
+        return std::shared_ptr<Texture>();
+
+    }
+
+    return std::shared_ptr<Texture>();
 }
 
 void Material::enable()
@@ -95,3 +134,9 @@ void Material::enable()
     }
 }
 
+std::shared_ptr<Texture> Material::GetTexture(std::string bindpoint)
+{
+    auto i=textures_.find(bindpoint);
+    if(i==textures_.end()) return std::shared_ptr<Texture2D>();
+    else return textures_[bindpoint];
+}
