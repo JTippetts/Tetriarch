@@ -101,6 +101,7 @@ int main(int argc, char **argv)
     // The system manager is the backbone of the whole thing. All systems can be
     // obtained through it, using the GetSystem<Type> method.
     // See systemmanager.h
+    std::cout << "Hi" << std::endl;
 
     SystemManager mom;
     // Create the Logging system.

@@ -1,6 +1,7 @@
 // a sketch of what the new API might look like
 
 #include "yaml-cpp/yaml.h"
+#include <string>
 #include <iostream>
 
 int main() {
